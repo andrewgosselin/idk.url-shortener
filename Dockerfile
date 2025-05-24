@@ -1,44 +1,56 @@
-# Build stage
-FROM oven/bun:1.0.25 as build
+FROM oven/bun AS base
+
+# Install dependencies only when needed
+FROM base AS deps
 
 WORKDIR /app
-
-# Copy package files
-COPY package.json bun.lock ./
 
 # Install dependencies
+COPY package.json bun.lockb ./
 RUN bun install --frozen-lockfile
 
-# Copy all files needed for build
+# Rebuild the source code only when needed
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Build the application
+# Next.js collects completely anonymous telemetry data about general usage.
+# Learn more here: https://nextjs.org/telemetry
+# Disable telemetry during the build
+ENV NEXT_TELEMETRY_DISABLED 1
+
 RUN bun run build
 
-# Production stage
-FROM oven/bun:1.0.25-slim
-
+# Production image, copy all the files and run next
+FROM base AS runner
 WORKDIR /app
 
-# Copy package files
-COPY package.json bun.lock ./
+ENV NODE_ENV production
 
-# Install production dependencies only
-RUN bun install --production
+# Disable telemetry
+ENV NEXT_TELEMETRY_DISABLED 1
 
-# Copy built application from build stage
-COPY --from=build /app/.next ./.next
-COPY --from=build /app/public ./public
-COPY --from=build /app/next.config.js ./
-COPY --from=build /app/.eslintrc.json ./
-COPY --from=build /app/tsconfig.json ./
+RUN adduser --system --uid 1001 nextjs
 
-# Set environment variables
-ENV NODE_ENV=production
-ENV PORT=3000
+COPY --from=builder /app/public ./public
 
-# Expose the port
+# Set the correct permission for prerender cache
+RUN mkdir .next
+RUN chown nextjs:bun .next
+
+# Automatically leverage output traces to reduce image size
+# https://nextjs.org/docs/advanced-features/output-file-tracing
+COPY --from=builder --chown=nextjs:bun /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:bun /app/.next/static ./.next/static
+
+USER nextjs
+
 EXPOSE 3000
 
-# Start the application
-CMD ["bun", "run", "start"] 
+ENV PORT 3000
+
+# Set hostname to localhost
+ENV HOSTNAME "0.0.0.0"
+
+CMD ["bun", "server.js"]
