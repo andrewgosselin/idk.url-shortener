@@ -39,7 +39,7 @@ export function LinksSidebar() {
 
   const handleDelete = async (slug: string) => {
     try {
-      const response = await fetch(`/api/links/${slug}`, {
+      const response = await fetch(`/api/delete/${slug}`, {
         method: 'DELETE',
       });
 
@@ -54,7 +54,7 @@ export function LinksSidebar() {
 
   const handleDeleteAll = async () => {
     try {
-      const response = await fetch('/api/links', {
+      const response = await fetch('/api/delete/all', {
         method: 'DELETE',
       });
 
