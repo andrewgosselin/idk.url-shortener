@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { nanoid } from 'nanoid';
@@ -10,7 +10,9 @@ const urlSchema = z.object({
   password: z.string().min(4).optional(),
 });
 
-export async function POST(request: Request) {
+export const dynamic = 'force-dynamic';
+
+export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { url, expiresAt, password } = urlSchema.parse(body);
