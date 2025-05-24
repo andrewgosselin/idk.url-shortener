@@ -13,16 +13,18 @@ import {
 interface DeleteModalProps {
   onClose: () => void;
   onConfirm: () => void;
+  title: string;
+  description: string;
 }
 
-export function DeleteModal({ onClose, onConfirm }: DeleteModalProps) {
+export function DeleteModal({ onClose, onConfirm, title, description }: DeleteModalProps) {
   return (
     <Dialog open onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Delete All Links</DialogTitle>
+          <DialogTitle>{title}</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete all your shortened URLs? This action cannot be undone.
+            {description}
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="flex gap-2 sm:gap-0">
@@ -30,7 +32,7 @@ export function DeleteModal({ onClose, onConfirm }: DeleteModalProps) {
             Cancel
           </Button>
           <Button variant="destructive" onClick={onConfirm}>
-            Delete All
+            Delete
           </Button>
         </DialogFooter>
       </DialogContent>
