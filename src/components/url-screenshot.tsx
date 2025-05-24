@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Link2 } from 'lucide-react';
 import Image from 'next/image';
@@ -12,10 +12,12 @@ export function UrlScreenshot({ url, className = '' }: UrlScreenshotProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const imageUrlRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!url) {
       setImageUrl(null);
+      imageUrlRef.current = null;
       return;
     }
 
@@ -34,8 +36,15 @@ export function UrlScreenshot({ url, className = '' }: UrlScreenshotProps) {
         }
 
         const blob = await response.blob();
-        const imageUrl = URL.createObjectURL(blob);
-        setImageUrl(imageUrl);
+        const newImageUrl = URL.createObjectURL(blob);
+        
+        // Clean up old URL if it exists
+        if (imageUrlRef.current) {
+          URL.revokeObjectURL(imageUrlRef.current);
+        }
+        
+        imageUrlRef.current = newImageUrl;
+        setImageUrl(newImageUrl);
       } catch (err) {
         setError('Failed to load screenshot');
         console.error('Screenshot error:', err);
@@ -47,11 +56,12 @@ export function UrlScreenshot({ url, className = '' }: UrlScreenshotProps) {
     const debounceTimer = setTimeout(fetchScreenshot, 500);
     return () => {
       clearTimeout(debounceTimer);
-      if (imageUrl) {
-        URL.revokeObjectURL(imageUrl);
+      if (imageUrlRef.current) {
+        URL.revokeObjectURL(imageUrlRef.current);
+        imageUrlRef.current = null;
       }
     };
-  }, [url, imageUrl]);
+  }, [url]); // Only depend on url changes
 
   if (loading) {
     return <Skeleton className={`w-full h-full ${className}`} />;
