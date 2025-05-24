@@ -24,7 +24,7 @@ WORKDIR /app
 COPY package.json bun.lock ./
 
 # Install production dependencies only
-RUN bun install --frozen-lockfile --production
+RUN bun install --production
 
 # Copy built application from build stage
 COPY --from=build /app/.next ./.next
