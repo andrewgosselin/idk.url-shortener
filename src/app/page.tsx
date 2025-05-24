@@ -114,10 +114,10 @@ export default function Home() {
                 className="space-y-3"
               >
                 <h1 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-                  IDK. URL Shortener
+                  idk. url shortener
                 </h1>
                 <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                  Create short, memorable links with advanced features like password protection and expiration dates.
+                  Shortening URL's since... well, never, until now!
                 </p>
               </motion.div>
             </div>
