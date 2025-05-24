@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useLinksStore } from '@/store/use-links-store';
@@ -13,15 +13,20 @@ export function LinksSidebar() {
   const { links, removeLink, updateClickCounts } = useLinksStore();
   const [selectedQRUrl, setSelectedQRUrl] = useState<string | null>(null);
   const [selectedDeleteUrl, setSelectedDeleteUrl] = useState<string | null>(null);
+  const linksRef = useRef(links);
+
+  useEffect(() => {
+    linksRef.current = links;
+  }, [links]);
 
   const fetchClickCounts = useCallback(async () => {
-    if (links.length === 0) return;
+    if (linksRef.current.length === 0) return;
 
     try {
       const response = await fetch('/api/stats', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ slugs: links.map(link => link.slug) }),
+        body: JSON.stringify({ slugs: linksRef.current.map(link => link.slug) }),
       });
       const data = await response.json();
 
@@ -31,7 +36,7 @@ export function LinksSidebar() {
     } catch (error) {
       console.error('Failed to fetch click counts:', error);
     }
-  }, [updateClickCounts, links]);
+  }, [updateClickCounts]);
 
   useEffect(() => {
     if (links.length > 0) {
