@@ -4,7 +4,7 @@ A modern, feature-rich URL shortener built with Next.js 14. Create short, memora
 
 [https://s.idontknow.tools/](https://s.idontknow.tools/)
 
-![image](https://github.com/user-attachments/assets/01f9b6d9-734b-44dd-a6a6-020aa0cc306b)
+![image](https://github.com/user-attachments/assets/6af4c57b-ac39-4595-b010-56dd60d8ca8b)
 
 ## ✨ Features
 
