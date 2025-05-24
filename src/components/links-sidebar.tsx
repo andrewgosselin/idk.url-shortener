@@ -48,10 +48,6 @@ export function LinksSidebar() {
 
   const handleDelete = async (slug: string) => {
     try {
-      const response = await fetch(`/api/delete/${slug}`, {
-        method: 'DELETE',
-      });
-
       // Remove from local storage regardless of API response
       removeLink(slug);
       setSelectedDeleteUrl(null);
@@ -62,10 +58,6 @@ export function LinksSidebar() {
 
   const handleDeleteAll = async () => {
     try {
-      const response = await fetch('/api/delete/all', {
-        method: 'DELETE',
-      });
-
       // Remove all links from local storage regardless of API response
       links.forEach(link => removeLink(link.slug));
       setSelectedDeleteUrl(null);
