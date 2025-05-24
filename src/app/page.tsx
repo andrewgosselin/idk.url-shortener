@@ -130,22 +130,19 @@ export default function Home() {
               transition={{ delay: 0.3 }}
             >
               <div className="flex-1 flex flex-col">
-                <div className="relative group">
-                  <div className="absolute -inset-0.5 bg-gradient-to-r from-primary to-primary/60 rounded-lg blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
-                  <div className="relative">
-                    <Input
-                      id="url"
-                      name="url"
-                      type="url"
-                      required
-                      value={url}
-                      onChange={(e) => setUrl(e.target.value)}
-                      placeholder="Enter URL to shorten"
-                      className="w-full p-6 rounded-lg border bg-background/50 backdrop-blur-sm text-lg"
-                    />
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                      <UrlHealthCheck url={url} onStatusChange={setUrlStatus} />
-                    </div>
+                <div className="relative">
+                  <Input
+                    id="url"
+                    name="url"
+                    type="url"
+                    required
+                    value={url}
+                    onChange={(e) => setUrl(e.target.value)}
+                    placeholder="Enter URL to shorten"
+                    className="w-full p-6 rounded-lg border bg-background/50 backdrop-blur-sm text-lg"
+                  />
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                    <UrlHealthCheck url={url} onStatusChange={setUrlStatus} />
                   </div>
                 </div>
 
