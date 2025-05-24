@@ -72,9 +72,9 @@ export default function Home() {
       });
     } catch (error) {
       toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: error instanceof Error ? error.message : 'Something went wrong',
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to shorten URL",
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
@@ -88,7 +88,7 @@ export default function Home() {
         title: 'Copied!',
         description: 'URL copied to clipboard.',
       });
-    } catch (err) {
+    } catch {
       toast({
         variant: 'destructive',
         title: 'Error',

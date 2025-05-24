@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Globe } from 'lucide-react';
+import Image from 'next/image';
 import { cn } from '@/lib/utils';
 
 interface FaviconProps {
@@ -27,7 +28,7 @@ export function Favicon({ url, className }: FaviconProps) {
         } else {
           setError(true);
         }
-      } catch (err) {
+      } catch {
         setError(true);
       }
     };
@@ -44,11 +45,15 @@ export function Favicon({ url, className }: FaviconProps) {
   }
 
   return (
-    <img
-      src={faviconUrl}
-      alt="Website favicon"
-      className={cn("rounded-md", className)}
-      onError={() => setError(true)}
-    />
+    <div className={cn("relative", className)}>
+      <Image
+        src={faviconUrl}
+        alt="Website favicon"
+        width={16}
+        height={16}
+        className="rounded-md"
+        onError={() => setError(true)}
+      />
+    </div>
   );
 } 

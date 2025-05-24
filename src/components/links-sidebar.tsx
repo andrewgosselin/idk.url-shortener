@@ -4,12 +4,9 @@ import { useEffect, useCallback, useRef, useState } from 'react';
 import { useLinksStore } from '@/store/use-links-store';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Copy, Trash2, ExternalLink, BarChart2, Clock, QrCode, Link2, Lock } from 'lucide-react';
+import { Copy, Trash2, Clock, QrCode, Link2, Lock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Skeleton } from '@/components/ui/skeleton';
-import { cn } from '@/lib/utils';
-import { formatDistanceToNow } from 'date-fns';
 import { QRCodeModal } from '@/components/qr-code-modal';
 import { Favicon } from '@/components/favicon';
 import { DeleteModal } from '@/components/delete-modal';
@@ -34,26 +31,8 @@ export function LinksSidebar() {
   const { links, removeLink, updateClickCounts } = useLinksStore();
   const { toast } = useToast();
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [timeLeft, setTimeLeft] = useState<Record<string, string>>({});
   const [selectedQRUrl, setSelectedQRUrl] = useState<string | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-
-  const copyToClipboard = async (url: string) => {
-    try {
-      await navigator.clipboard.writeText(url);
-      toast({
-        title: 'Copied!',
-        description: 'URL copied to clipboard.',
-      });
-    } catch (err) {
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: 'Failed to copy URL.',
-      });
-    }
-  };
 
   const fetchClickCounts = useCallback(async () => {
     if (links.length === 0) return;
@@ -73,10 +52,8 @@ export function LinksSidebar() {
       updateClickCounts(stats);
     } catch (error) {
       console.error('Failed to fetch click counts:', error);
-    } finally {
-      setIsLoading(false);
     }
-  }, [links.length, updateClickCounts]);
+  }, [links, updateClickCounts]);
 
   // Update countdown timers
   useEffect(() => {
@@ -94,8 +71,6 @@ export function LinksSidebar() {
           }
         }
       });
-
-      setTimeLeft(newTimeLeft);
     };
 
     // Update immediately and then every second
@@ -106,10 +81,7 @@ export function LinksSidebar() {
   }, [links]);
 
   useEffect(() => {
-    if (links.length === 0) {
-      setIsLoading(false);
-      return;
-    }
+    if (links.length === 0) return;
 
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
@@ -124,33 +96,6 @@ export function LinksSidebar() {
       }
     };
   }, [links.length, fetchClickCounts]);
-
-  const handleDelete = async (slug: string) => {
-    try {
-      // Delete from the server
-      const response = await fetch(`/api/delete/${slug}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to delete URL');
-      }
-
-      // Remove from local store
-      removeLink(slug);
-
-      toast({
-        title: 'Success',
-        description: 'URL has been deleted.',
-      });
-    } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: error instanceof Error ? error.message : 'Failed to delete URL',
-      });
-    }
-  };
 
   const handleDeleteAll = async () => {
     try {

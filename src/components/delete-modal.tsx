@@ -9,7 +9,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { motion } from 'framer-motion';
 
 interface DeleteModalProps {
   onClose: () => void;
