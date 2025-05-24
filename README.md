@@ -38,12 +38,6 @@ A modern, feature-rich URL shortener built with Next.js 14. Create short, memora
    bun install
    ```
 
-3. Set up your environment variables:
-   ```bash
-   cp .env.example .env.local
-   ```
-   Edit `.env.local` with your database credentials and other configuration.
-
 4. Set up the database:
    ```bash
    # For SQLite (default, no additional setup needed)
