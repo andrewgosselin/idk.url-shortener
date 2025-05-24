@@ -39,6 +39,13 @@ COPY --from=builder /app/public ./public
 RUN mkdir .next
 RUN chown nextjs:bun .next
 
+# Copy all necessary configuration files
+COPY --from=builder /app/.eslintrc.json ./
+COPY --from=builder /app/tsconfig.json ./
+COPY --from=builder /app/next.config.js ./
+COPY --from=builder /app/postcss.config.js ./
+COPY --from=builder /app/tailwind.config.js ./
+
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
 COPY --from=builder --chown=nextjs:bun /app/.next/standalone ./

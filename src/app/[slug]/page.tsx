@@ -6,13 +6,13 @@ import { ErrorPage } from '@/components/error-page';
 import bcrypt from 'bcryptjs';
 
 interface PageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 export default async function RedirectPage({ params }: PageProps) {
-  const { slug } = params;
+  const { slug } = await params;
   const cookieStore = await cookies();
 
   const shortUrl = await prisma.shortUrl.findUnique({
