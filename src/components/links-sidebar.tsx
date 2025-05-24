@@ -7,7 +7,6 @@ import { useLinksStore } from '@/store/use-links-store';
 import { ExternalLink, Trash2, QrCode } from 'lucide-react';
 import { QRCodeModal } from '@/components/qr-code-modal';
 import { useState } from 'react';
-import { Favicon } from '@/components/favicon';
 import { DeleteModal } from '@/components/delete-modal';
 
 export function LinksSidebar() {
@@ -19,23 +18,28 @@ export function LinksSidebar() {
     if (links.length === 0) return;
 
     try {
-      const slugs = links.map(link => link.slug).join(',');
-      const response = await fetch(`/api/stats?slugs=${slugs}`);
+      const response = await fetch('/api/stats', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slugs: links.map(link => link.slug) }),
+      });
       const data = await response.json();
 
-      if (response.ok) {
-        updateClickCounts(data);
+      if (response.ok && data.stats) {
+        updateClickCounts(data.stats);
       }
     } catch (error) {
       console.error('Failed to fetch click counts:', error);
     }
-  }, [links, updateClickCounts]);
+  }, [updateClickCounts]);
 
   useEffect(() => {
-    fetchClickCounts();
-    const interval = setInterval(fetchClickCounts, 30000); // Update every 30 seconds
-    return () => clearInterval(interval);
-  }, [fetchClickCounts]);
+    if (links.length > 0) {
+      fetchClickCounts();
+      const interval = setInterval(fetchClickCounts, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [links, fetchClickCounts]);
 
   const handleDelete = async (slug: string) => {
     try {
@@ -69,7 +73,7 @@ export function LinksSidebar() {
 
   if (links.length === 0) {
     return (
-      <Card className="p-4 h-full">
+      <Card className="p-4 h-full flex items-center justify-center">
         <div className="text-center text-muted-foreground">
           <p>No links yet</p>
           <p className="text-sm">Create your first short link above</p>
@@ -79,15 +83,14 @@ export function LinksSidebar() {
   }
 
   return (
-    <Card className="p-4 h-full overflow-y-auto">
-      <div className="space-y-4">
+    <Card className="p-4 h-full flex flex-col">
+      <div className="space-y-4 flex-1 overflow-y-auto">
         {links.map((link) => (
           <div
             key={link.slug}
             className="p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
           >
             <div className="flex items-start gap-2">
-              <Favicon url={link.url} className="w-4 h-4 mt-1" />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <a
@@ -138,7 +141,7 @@ export function LinksSidebar() {
       </div>
 
       {links.length > 1 && (
-        <div className="mt-4">
+        <div className="mt-4 pt-4 border-t">
           <Button
             variant="destructive"
             size="sm"
