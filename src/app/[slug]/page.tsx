@@ -1,57 +1,145 @@
-import { redirect } from 'next/navigation';
-import { prisma } from '@/lib/prisma';
-import { cookies } from 'next/headers';
-import { PasswordPrompt } from '@/components/password-prompt';
-import { ErrorPage } from '@/components/error-page';
-import bcrypt from 'bcryptjs';
+'use client';
 
-export default async function RedirectPage({ params }: { params: { slug: string } }) {
-  const { slug } = params;
-  const cookieStore = await cookies();
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
+import { Toaster } from '@/components/ui/toaster';
+import { motion } from 'framer-motion';
+import { Lock } from 'lucide-react';
 
-  const shortUrl = await prisma.shortUrl.findUnique({
-    where: { slug },
-  });
+interface PageProps {
+  params: {
+    slug: string;
+  };
+}
 
-  if (!shortUrl) {
-    return <ErrorPage title="URL Not Found" message="The short URL you're looking for doesn't exist." />;
-  }
+export default function SlugPage({ params }: PageProps) {
+  const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [isChecking, setIsChecking] = useState(true);
+  const router = useRouter();
+  const { toast } = useToast();
 
-  // Check if URL has expired
-  if (shortUrl.expiresAt && new Date(shortUrl.expiresAt) < new Date()) {
-    return <ErrorPage title="URL Expired" message="This short URL has expired." />;
-  }
+  useEffect(() => {
+    const checkUrl = async () => {
+      try {
+        const response = await fetch(`/api/check/${params.slug}`);
+        const data = await response.json();
 
-  // Check if URL is password protected
-  if (shortUrl.password) {
-    const storedPassword = cookieStore.get('password_' + slug)?.value;
-    
-    if (!storedPassword) {
-      return (
-        <html>
-          <body>
-            <PasswordPrompt slug={slug} />
-          </body>
-        </html>
-      );
+        if (!response.ok) {
+          throw new Error(data.error || 'URL not found');
+        }
+
+        if (!data.hasPassword) {
+          // If no password is required, redirect immediately
+          window.location.href = data.url;
+        }
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: error instanceof Error ? error.message : "URL not found",
+          variant: "destructive",
+        });
+        router.push('/');
+      } finally {
+        setIsChecking(false);
+      }
+    };
+
+    checkUrl();
+  }, [params.slug, router, toast]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const response = await fetch(`/api/check/${params.slug}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Invalid password');
+      }
+
+      // Redirect to the original URL
+      window.location.href = data.url;
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Invalid password",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
     }
+  };
 
-    // Verify the stored password
-    const isValid = await bcrypt.compare(storedPassword, shortUrl.password);
-    if (!isValid) {
-      // Clear the invalid cookie
-      const response = new Response('Invalid password', { status: 401 });
-      response.headers.set('Set-Cookie', `password_${slug}=; Path=/; Max-Age=0`);
-      return <ErrorPage title="Invalid Password" message="The password you entered is incorrect." />;
-    }
+  if (isChecking) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-muted-foreground">Checking URL...</p>
+        </div>
+      </div>
+    );
   }
 
-  // Increment click count
-  await prisma.shortUrl.update({
-    where: { slug },
-    data: { clicks: { increment: 1 } },
-  });
+  return (
+    <main className="min-h-screen flex items-center justify-center p-4 bg-background">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="w-full max-w-md space-y-8"
+      >
+        <div className="text-center">
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: "spring", stiffness: 200, damping: 10 }}
+            className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center"
+          >
+            <Lock className="h-6 w-6 text-primary" />
+          </motion.div>
+          <h2 className="mt-6 text-2xl font-bold tracking-tight">
+            Password Protected
+          </h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            This link is password protected. Please enter the password to continue.
+          </p>
+        </div>
 
-  // Redirect to the destination URL
-  redirect(shortUrl.url);
+        <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+          <div>
+            <Input
+              id="password"
+              name="password"
+              type="password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter password"
+              className="w-full"
+            />
+          </div>
+
+          <Button
+            type="submit"
+            disabled={isLoading}
+            className="w-full"
+          >
+            {isLoading ? 'Verifying...' : 'Continue'}
+          </Button>
+        </form>
+      </motion.div>
+      <Toaster />
+    </main>
+  );
 } 
