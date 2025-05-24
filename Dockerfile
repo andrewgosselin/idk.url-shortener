@@ -1,5 +1,5 @@
 # Build stage
-FROM oven/bun:1 AS builder
+FROM oven/bun:1.0.25 as build
 
 WORKDIR /app
 
@@ -9,42 +9,36 @@ COPY package.json bun.lock ./
 # Install dependencies
 RUN bun install --frozen-lockfile
 
-# Copy source code
+# Copy all files needed for build
 COPY . .
-
-# Set environment variables for build
-ENV NODE_ENV=production
-ENV NEXT_TELEMETRY_DISABLED=1
 
 # Build the application
 RUN bun run build
 
 # Production stage
-FROM oven/bun:1-slim
+FROM oven/bun:1.0.25-slim
 
 WORKDIR /app
 
-# Copy built assets from builder
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/bun.lock ./bun.lock
-COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/next.config.js ./next.config.js
+# Copy package files
+COPY package.json bun.lock ./
 
 # Install production dependencies only
 RUN bun install --frozen-lockfile --production
 
-# Generate Prisma client
-RUN bunx prisma generate
+# Copy built application from build stage
+COPY --from=build /app/.next ./.next
+COPY --from=build /app/public ./public
+COPY --from=build /app/next.config.js ./
+COPY --from=build /app/.eslintrc.json ./
+COPY --from=build /app/tsconfig.json ./
 
 # Set environment variables
 ENV NODE_ENV=production
 ENV PORT=3000
-ENV NEXT_TELEMETRY_DISABLED=1
 
 # Expose the port
 EXPOSE 3000
 
 # Start the application
-CMD ["bun", "start"] 
+CMD ["bun", "run", "start"] 
