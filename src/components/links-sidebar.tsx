@@ -47,10 +47,9 @@ export function LinksSidebar() {
         method: 'DELETE',
       });
 
-      if (response.ok) {
-        removeLink(slug);
-        setSelectedDeleteUrl(null);
-      }
+      // Remove from local storage regardless of API response
+      removeLink(slug);
+      setSelectedDeleteUrl(null);
     } catch (error) {
       console.error('Failed to delete link:', error);
     }
@@ -62,10 +61,9 @@ export function LinksSidebar() {
         method: 'DELETE',
       });
 
-      if (response.ok) {
-        links.forEach(link => removeLink(link.slug));
-        setSelectedDeleteUrl(null);
-      }
+      // Remove all links from local storage regardless of API response
+      links.forEach(link => removeLink(link.slug));
+      setSelectedDeleteUrl(null);
     } catch (error) {
       console.error('Failed to delete all links:', error);
     }
