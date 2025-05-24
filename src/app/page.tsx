@@ -70,11 +70,11 @@ export default function Home() {
         title: 'Success!',
         description: 'Your URL has been shortened.',
       });
-    } catch (err) {
+    } catch (error) {
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: err instanceof Error ? err.message : 'Something went wrong',
+        description: error instanceof Error ? error.message : 'Something went wrong',
       });
     } finally {
       setLoading(false);
