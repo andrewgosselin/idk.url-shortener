@@ -1,4 +1,4 @@
-# ✨ IDK. URL Shortener
+# ✨ idk.urls - URL Shortener
 
 A modern, feature-rich URL shortener built with Next.js 14. Create short, memorable links with password protection, expiry dates, and real-time analytics. **Completely self-hostable, SQLite compatible, and lightning fast!**
 
