@@ -117,7 +117,7 @@ export default function Home() {
                   idk. url shortener
                 </h1>
                 <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                  shortening url's since... well, never, until now!
+                  shortening url&apos;s since... well, never, until now!
                 </p>
               </motion.div>
             </div>

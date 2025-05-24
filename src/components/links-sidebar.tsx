@@ -31,7 +31,7 @@ export function LinksSidebar() {
     } catch (error) {
       console.error('Failed to fetch click counts:', error);
     }
-  }, [updateClickCounts]);
+  }, [updateClickCounts, links]);
 
   useEffect(() => {
     if (links.length > 0) {

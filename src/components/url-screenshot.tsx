@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Link2 } from 'lucide-react';
+import Image from 'next/image';
 
 interface UrlScreenshotProps {
   url: string;
@@ -50,7 +51,7 @@ export function UrlScreenshot({ url, className = '' }: UrlScreenshotProps) {
         URL.revokeObjectURL(imageUrl);
       }
     };
-  }, [url]);
+  }, [url, imageUrl]);
 
   if (loading) {
     return <Skeleton className={`w-full h-full ${className}`} />;
@@ -73,10 +74,12 @@ export function UrlScreenshot({ url, className = '' }: UrlScreenshotProps) {
   }
 
   return (
-    <img
+    <Image
       src={imageUrl}
       alt="URL preview"
       className={`w-full h-full object-cover rounded-lg ${className}`}
+      width={320}
+      height={240}
     />
   );
 } 

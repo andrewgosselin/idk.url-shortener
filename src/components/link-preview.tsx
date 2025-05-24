@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Link2 } from 'lucide-react';
 import { UrlScreenshot } from '@/components/url-screenshot';
 
 interface LinkPreviewProps {
@@ -17,7 +15,6 @@ interface PreviewData {
 export function LinkPreview({ url }: LinkPreviewProps) {
   const [previewData, setPreviewData] = useState<PreviewData | null>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!url) {
@@ -27,7 +24,6 @@ export function LinkPreview({ url }: LinkPreviewProps) {
 
     const fetchPreview = async () => {
       setLoading(true);
-      setError(null);
       try {
         const response = await fetch('/api/preview', {
           method: 'POST',
@@ -42,7 +38,6 @@ export function LinkPreview({ url }: LinkPreviewProps) {
         const data = await response.json();
         setPreviewData(data);
       } catch (err) {
-        setError('Failed to load preview');
         console.error('Preview error:', err);
       } finally {
         setLoading(false);
