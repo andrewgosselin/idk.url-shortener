@@ -99,28 +99,28 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen flex items-start justify-center p-4 bg-background">
-      <div className="flex gap-8 max-w-5xl w-full">
-        <div className="flex-1">
+    <main className="min-h-screen flex flex-col lg:flex-row items-start justify-center p-4 bg-background">
+      <div className="flex flex-col lg:flex-row gap-8 max-w-5xl w-full">
+        <div className="flex-1 w-full">
           <div className="w-full">
-            <div className="text-center mb-12 relative">
+            <div className="text-center mb-8 lg:mb-12 relative">
               <div className="absolute right-0 top-0">
                 <ThemeToggle />
               </div>
               <motion.h1 
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-4xl font-bold mb-3 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent"
+                className="text-3xl lg:text-4xl font-bold mb-3 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent"
               >
-                idk.url-shortener
+                IDK. URL Shortener
               </motion.h1>
               <motion.p 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.2 }}
-                className="text-muted-foreground text-lg"
+                className="text-muted-foreground text-base lg:text-lg"
               >
-                just a url shortener, simple as that
+                Create short, memorable links
               </motion.p>
             </div>
 
@@ -150,7 +150,7 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <motion.div 
                   className="flex items-center space-x-2 p-4 rounded-lg border bg-background/50 backdrop-blur-sm"
                   whileHover={{ scale: 1.02 }}
@@ -296,7 +296,7 @@ export default function Home() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
-                  className="mt-8 space-y-4 p-6 rounded-lg border bg-background/50 backdrop-blur-sm"
+                  className="mt-8 space-y-4 p-4 lg:p-6 rounded-lg border bg-background/50 backdrop-blur-sm"
                 >
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <Link2 className="h-4 w-4" />
@@ -329,7 +329,9 @@ export default function Home() {
             </AnimatePresence>
           </div>
         </div>
-        <LinksSidebar />
+        <div className="w-full lg:w-80">
+          <LinksSidebar />
+        </div>
       </div>
       <Toaster />
     </main>
