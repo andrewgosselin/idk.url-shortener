@@ -3,10 +3,14 @@ import { prisma } from '@/lib/prisma';
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: {
+    params: Promise<{
+      slug: string;
+    }>;
+  }
 ) {
   try {
-    const { slug } = params;
+    const { slug } = await params;
 
     // Delete the URL from the database
     await prisma.shortUrl.delete({
