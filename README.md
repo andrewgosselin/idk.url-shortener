@@ -2,8 +2,6 @@
 
 A modern, feature-rich URL shortener built with Next.js 14. Create short, memorable links with password protection, expiry dates, and real-time analytics. **Completely self-hostable, SQLite compatible, and lightning fast!**
 
-![URL Shortener Preview](https://i.imgur.com/placeholder.png)
-
 ## ✨ Features
 
 - 🔒 **Password Protection**: Secure sensitive links with password protection
@@ -68,19 +66,6 @@ Visit [http://localhost:3000](http://localhost:3000) to see your URL shortener i
 - **Icons**: [Lucide Icons](https://lucide.dev/)
 - **QR Codes**: [qrcode.react](https://github.com/zpao/qrcode.react)
 
-## 🔧 Configuration
-
-The application can be configured through environment variables:
-
-```env
-# Database (choose one)
-DATABASE_URL="file:./dev.db"  # SQLite
-# DATABASE_URL="postgresql://..."  # PostgreSQL
-# DATABASE_URL="mysql://..."  # MySQL
-
-# Application
-NEXT_PUBLIC_BASE_URL="http://localhost:3000"
-```
 
 ## 🚀 Deployment
 
@@ -104,9 +89,3 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 3. Commit your changes (`git commit -m 'Add some amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
-
-## 🙏 Acknowledgments
-
-- [Next.js](https://nextjs.org/) for the amazing framework
-- [shadcn/ui](https://ui.shadcn.com/) for the beautiful components
-- [Vercel](https://vercel.com) for the deployment platform
