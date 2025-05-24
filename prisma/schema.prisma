@@ -1,0 +1,18 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model ShortUrl {
+  id        Int      @id @default(autoincrement())
+  slug      String   @unique
+  url       String
+  createdAt DateTime @default(now())
+  clicks    Int      @default(0)
+  expiresAt DateTime?
+  password  String?  // Hashed password for protected links
+} 
