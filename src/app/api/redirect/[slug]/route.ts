@@ -74,10 +74,14 @@ export async function GET(
 
 export async function POST(
   request: Request,
-  { params }: { params: { slug: string } }
+  { params }: {
+    params: Promise<{
+      slug: string;
+    }>;
+  }
 ) {
   try {
-    const { slug } = params;
+    const { slug } = await params;
     const { password } = await request.json();
 
     const shortUrl = await prisma.shortUrl.findUnique({
