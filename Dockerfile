@@ -24,7 +24,7 @@ WORKDIR /app
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/bun.lockb ./bun.lockb
+COPY --from=builder /app/bun.lock ./bun.lock
 COPY --from=builder /app/prisma ./prisma
 
 # Install production dependencies only
