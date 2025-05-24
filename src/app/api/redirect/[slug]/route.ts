@@ -5,7 +5,11 @@ import { cookies } from 'next/headers';
 
 export async function GET(
   request: Request,
-  { params }: { params: { slug: string } }
+  { params }: {
+    params: Promise<{
+      slug: string;
+    }>;
+  }
 ) {
   try {
     const { slug } = await params;
@@ -27,7 +31,7 @@ export async function GET(
     // Check if URL is password protected
     if (shortUrl.password) {
       const storedPassword = cookieStore.get('password_' + slug)?.value;
-      
+
       if (!storedPassword) {
         return NextResponse.json({ error: 'Password required' }, { status: 401 });
       }
